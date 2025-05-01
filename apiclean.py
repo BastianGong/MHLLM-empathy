@@ -12,7 +12,7 @@ client = OpenAI(
     base_url="https://api.deepseek.com/v1"
 )
 
-# 提示词模板
+
 PROMPT_TEMPLATE = """
 请你对以下中文回答进行清洗：
 1. 删除冗余表达、语气词、套话、重复内容；
@@ -28,13 +28,13 @@ PROMPT_TEMPLATE = """
 清洗后的结果：
 """
 
-# 缓存字典（防止重复调用）
+
 cache = {}
 
 def get_cache_key(text):
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
-# 封装调用函数 + 缓存
+
 def clean_with_gpt_cached(answer: str) -> str:
     key = get_cache_key(answer)
     if key in cache:
@@ -93,7 +93,7 @@ def clean_json_file_parallel(input_path: Path, output_path: Path, max_workers: i
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(cleaned_answers, f, ensure_ascii=False, indent=2)
 
-# 批量清洗整个文件夹
+
 def batch_clean_folder(input_dir, output_dir, max_workers=5):
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -106,7 +106,7 @@ def batch_clean_folder(input_dir, output_dir, max_workers=5):
         output_file = output_dir / input_file.name
         clean_json_file_parallel(input_file, output_file, max_workers=max_workers)
 
-    print("\n✅ 所有文件处理完毕！")
+    print("finish!")
 
 # 主入口
 if __name__ == "__main__":
