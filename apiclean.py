@@ -52,7 +52,7 @@ def clean_with_gpt_cached(answer: str) -> str:
         )
         cleaned = response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"调用出错: {e}")
+        print(f"error: {e}")
         cleaned = ""
 
     cache[key] = cleaned
@@ -72,13 +72,13 @@ def clean_json_file_parallel(input_path: Path, output_path: Path, max_workers: i
             for idx, ans in enumerate(answers)
         }
 
-        for future in tqdm(as_completed(future_to_idx), total=len(answers), desc=f"清洗 {input_path.name}", unit="条"):
+        for future in tqdm(as_completed(future_to_idx), total=len(answers), desc=f"clean {input_path.name}", unit="条"):
             idx = future_to_idx[future]
             ans = answers[idx]
             try:
                 cleaned_text = future.result()
             except Exception as e:
-                print(f"第 {idx} 条清洗失败: {e}")
+                print(f"第 {idx} 失败: {e}")
                 cleaned_text = ""
 
             cleaned_answers[idx] = {
@@ -100,16 +100,16 @@ def batch_clean_folder(input_dir, output_dir, max_workers=5):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     json_files = list(input_dir.glob("*.json"))
-    print(f"共发现 {len(json_files)} 个 JSON 文件，开始处理...\n")
+    print(f"find {len(json_files)} \n")
 
-    for input_file in tqdm(json_files, desc="整体进度", unit="文件"):
+    for input_file in tqdm(json_files, desc="Total", unit="docoment"):
         output_file = output_dir / input_file.name
         clean_json_file_parallel(input_file, output_file, max_workers=max_workers)
 
     print("finish!")
 
-# 主入口
+
 if __name__ == "__main__":
     input_folder = "/Users/gongshengxiao/Desktop/yixinli150/jiaolvclean"
     output_folder = "/Users/gongshengxiao/Desktop/yixinli150/jiaolv123"
-    batch_clean_folder(input_folder, output_folder, max_workers=5)  # 可调整并发数量
+    batch_clean_folder(input_folder, output_folder, max_workers=5)  
