@@ -110,6 +110,6 @@ def batch_clean_folder(input_dir, output_dir, max_workers=5):
 
 
 if __name__ == "__main__":
-    input_folder = "/Users/gongshengxiao/Desktop/yixinli150/jiaolvclean"
-    output_folder = "/Users/gongshengxiao/Desktop/yixinli150/jiaolv123"
+    input_folder = "/Users/gongshengxiao/Desktop/yixinli150/yuerclean"
+    output_folder = "/Users/gongshengxiao/Desktop/yixinli150/yuer123"
     batch_clean_folder(input_folder, output_folder, max_workers=5)  
