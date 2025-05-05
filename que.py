@@ -34,7 +34,7 @@ def collect_questions(input_folder, output_file):
     print(f"save as {output_file}")
 
 if __name__ == "__main__":
-    input_folder = "/Users/gongshengxiao/Desktop/yixinli150/yiyuclean"
-    output_file = "/Users/gongshengxiao/Desktop/yixinli150/yiyuqueation.json"
+    input_folder = "/Users/gongshengxiao/Desktop/yixinli150/yuerclean"
+    output_file = "/Users/gongshengxiao/Desktop/yixinli150/yuerqueation.json"
 
     collect_questions(input_folder, output_file)
