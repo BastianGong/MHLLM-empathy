@@ -1,33 +1,56 @@
 import json
 import re
+from pathlib import Path
 
 def clean_text(text):
+    # 删除 emoji（匹配表情符号范围）
     text = re.sub(r'[\U00010000-\U0010ffff]', '', text)
+    # 删除破折号（全角、半角）
     text = re.sub(r'[—–-]', '', text)
+    # 删除序号符号 ①②③④⑤⑥⑦⑧⑨⑩
     text = re.sub(r'[①②③④⑤⑥⑦⑧⑨⑩]', '', text)
-    text = text.replace('\n', ' ')
+    # 删除换行符
+    text = text.replace('\n', ' ').replace('\r', ' ')
+    # 合并多余空格
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
-def process_file(input_path, output_path):
-    with open(input_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+def extract_number(filename):
+    match = re.search(r'\d+', filename)
+    return int(match.group()) if match else -1
 
-    cleaned_data = []
-    for item in data:
-        cleaned_item = {
-            "file": item.get("file", ""),
-            "title": clean_text(item.get("title", "")),
-            "content": clean_text(item.get("content", ""))
-        }
-        cleaned_data.append(cleaned_item)
+def process_folder(input_folder, output_file):
+    input_path = Path(input_folder)
+    all_results = []
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
+    json_files = sorted(input_path.glob("*.json"), key=lambda x: extract_number(x.name))
+    print(f"找到 {len(json_files)} 个文件")
 
-    print(f"清理完成，已保存到 {output_path}")
+    for json_file in json_files:
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+
+            question = data.get("question", {})
+            title = clean_text(question.get("title", ""))
+            content = clean_text(question.get("content", ""))
+
+            all_results.append({
+                "file": json_file.name,
+                "title": title,
+                "content": content
+            })
+
+        except Exception as e:
+            print(f"读取 {json_file.name} 出错: {e}")
+
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(all_results, f, ensure_ascii=False, indent=2)
+
+    print(f"已完成，保存到 {output_file}")
 
 if __name__ == "__main__":
-    input_file = "/Users/gongshengxiao/Desktop/yixinli150/renjiguanxiqueation.json"   
-    output_file = "//Users/gongshengxiao/Desktop/yixinli150/renjiguanxiquestion_clean.json"  
-    process_file(input_file, output_file)
+    input_folder = "/Users/gongshengxiao/Desktop/yixinli150/yuerclean"  # ← 替换为你的文件夹路径
+    output_file = "/Users/gongshengxiao/Desktop/yixinli150/yuer_question.json"  # ← 替换为你的输出文件路径
+
+    process_folder(input_folder, output_file)
